@@ -1,0 +1,73 @@
+<!doctype html   
+html lang="ar" dir="rtl"> 
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08385e">
+<title>مغامرات سلومي ورانسي - v28</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#08385e;font-family:Tahoma,Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh}
+#stage{position:relative;width:min(100vw,150vh);line-height:0}
+#art{display:block;width:100%;height:auto}
+.hotspot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:14px}
+.hotspot:focus-visible{outline:3px solid white}
+#start{left:39%;top:83%;width:22%;height:15%}
+#arabic{left:14%;top:30%;width:17%;height:17%}
+#math{left:32%;top:30%;width:17%;height:17%}
+#science{left:50%;top:30%;width:17%;height:17%}
+#space{left:68%;top:30%;width:17%;height:17%}
+#arts{left:20%;top:51%;width:17%;height:17%}
+#values{left:39%;top:51%;width:17%;height:17%}
+#adventure{left:57%;top:51%;width:17%;height:17%}
+#health{left:75%;top:51%;width:17%;height:17%}
+#dialog{display:none;position:fixed;inset:0;background:#001b32bb;align-items:center;justify-content:center;padding:16px;z-index:4}
+#card{max-height:88vh;overflow-y:auto;background:#fff9e9;color:#173b61;border:4px solid #ffc83d;border-radius:24px;padding:22px;width:min(92vw,440px);text-align:center;line-height:1.5;box-shadow:0 12px 35px #00182c88}
+#card h2{margin:0 0 8px}
+#card .stats{font-size:15px;font-weight:bold;color:#9a6500;margin:4px 0 10px}
+#choices button:disabled{opacity:.55;cursor:not-allowed}
+#choices button.action{background:#ffc83d;border:0;color:#583600;font-weight:bold}
+#card p{font-size:18px}
+button.action{border:0;border-radius:14px;padding:12px 18px;margin:5px;background:#ffc83d;color:#583600;font-size:16px;font-weight:bold}
+button.blue{background:#168bd8;color:white}
+#choices{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#choices button{background:#e8f7ff;border:2px solid #9bd8f4;border-radius:12px;padding:12px;font-size:18px}
+#feedback{font-weight:bold;min-height:28px}
+
+/* Saloumi presenter question scene */
+#card{width:min(94vw,560px);padding:16px 18px 18px;border-radius:28px;border-width:5px;background:linear-gradient(160deg,#fffdf4,#fff0c9)}
+.presenter{display:flex;align-items:center;gap:12px;direction:rtl;margin:2px 0 12px}
+#saloumiFace{width:116px;height:116px;flex:0 0 116px;border-radius:50%;border:5px solid #ffbf32;object-fit:cover;object-position:50% 35%;box-shadow:0 5px 0 #d88b1c}
+.speech{position:relative;flex:1;background:#fff;border:3px solid #37a9e8;border-radius:22px;padding:12px 14px;min-height:100px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 #b9e5f7}
+.speech:after{content:"";position:absolute;right:-13px;top:35px;width:20px;height:20px;background:#fff;border-top:3px solid #37a9e8;border-right:3px solid #37a9e8;transform:rotate(45deg)}
+#prompt{font-size:20px!important;font-weight:900;color:#173b61;margin:0;line-height:1.55}
+#heading{font-size:23px;color:#9a5b00;margin:0 0 7px}
+#feedback{border-radius:16px;padding:9px 12px;min-height:48px;font-size:18px;background:#fff7df;margin:10px 0 6px;transition:all .2s}
+#feedback.good{background:#e2f9e9;color:#13763c;border:2px solid #65c98b;animation:pop .35s ease}
+#feedback.bad{background:#fff0ed;color:#b7352c;border:2px solid #f29a8e;animation:shake .28s ease}
+#saloumiMood{font-size:28px;display:block;margin-bottom:1px}
+#choices button{min-width:28%;font-weight:bold;box-shadow:0 3px 0 #b2d9e9;transition:transform .12s}
+#choices button:active{transform:translateY(2px)}
+@keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(5px)}75%{transform:translateX(-5px)}}
+@media(max-width:420px){#card{padding:12px}#saloumiFace{width:88px;height:88px;flex-basis:88px}.speech{min-height:86px;padding:8px}#prompt{font-size:17px!important}#choices button{font-size:16px;padding:10px;min-width:42%}}
+
+
+#saloumiWrap{display:block}#saloumiFace{display:block}
+#ransiFace{display:none;width:116px;height:116px;flex:0 0 116px;border-radius:50%;border:5px solid #f28ac2;background:radial-gradient(circle at 35% 25%,#fff 0 12%,#ffd9ed 13% 60%,#f5a6d0 100%);box-shadow:0 5px 0 #c96da2;align-items:center;justify-content:center;flex-direction:column;font-size:42px;line-height:1}
+#ransiFace small{font-size:15px;font-weight:900;color:#8b3266;margin-top:7px}
+#presenterName{display:inline-block;font-size:17px;font-weight:900;color:#9a5b00;margin-left:5px}
+@media(max-width:420px){#ransiFace{width:88px;height:88px;flex-basis:88px;font-size:34px}}
+
+
+/* Character motion and voice controls */
+#saloumiWrap,#ransiFace{transform-origin:center bottom;}
+#saloumiWrap.talking,#ransiFace.talking{animation:characterTalk .62s ease-in-out infinite alternate;}
+#saloumiWrap.happy,#ransiFace.happy{animation:characterHappy .55s ease-in-out 2;}
+@keyframes characterTalk{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-5px) rotate(1deg)}}
+@keyframes characterHappy{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(-10px) scale(1.06)}}
+#saloumiWrap.oops,#ransiFace.oops{animation:characterOops .38s ease-in-out 2;}@keyframes characterOops{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-4px) rotate(-3deg)}75%{transform:translateX(4px) rotate(3deg)}}
+#saloumiWrap.happy,#ransiFace.happy{filter:drop-shadow(0 0 9px #ffd34f)}#feedback.good{box-shadow:0 0 0 3px #b7efc8 inset}#feedback.bad{box-shadow:0 0 0 3px #ffd0c9 inset}
+/* Landscape-first mobile layout */
+html,body{width:100%;height:100%;min-height:100%;overflow:hidden}
+body{min-height:100dvh}
