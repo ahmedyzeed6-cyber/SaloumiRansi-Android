@@ -14,7 +14,7 @@ jobs:
   build:
     name: Build v34 APK
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
@@ -28,13 +28,9 @@ jobs:
           test -s "$ARCHIVE"
           mkdir extracted
           unzip -q "$ARCHIVE" -d extracted
-          SETTINGS=$(find extracted -type f -name settings.gradle -print -quit)
+          SETTINGS=$(find extracted -type f \( -name settings.gradle -o -name settings.gradle.kts \) -print -quit)
           if [ -z "$SETTINGS" ]; then
-            SETTINGS=$(find extracted -type f -name settings.gradle.kts -print -quit)
-          fi
-          if [ -z "$SETTINGS" ]; then
-            echo "Android project settings file not found"
-            unzip -l "$ARCHIVE" | head -80
+            echo "Gradle settings file not found"
             exit 1
           fi
           PROJECT_DIR=$(dirname "$SETTINGS")
@@ -49,6 +45,15 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platforms;android-35
+            build-tools;35.0.0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Build APK
         shell: bash
@@ -69,4 +74,3 @@ jobs:
           path: "**/build/outputs/apk/debug/*.apk"
           if-no-files-found: error
           retention-days: 30
-
