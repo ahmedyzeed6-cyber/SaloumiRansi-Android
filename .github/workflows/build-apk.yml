@@ -1,1 +1,72 @@
 
+name: Build Saloumi Ransi APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build v34 APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="SaloumiRansi_Android_v34_CloudBuild.zip"
+          test -s "$ARCHIVE"
+          mkdir extracted
+          unzip -q "$ARCHIVE" -d extracted
+          SETTINGS=$(find extracted -type f -name settings.gradle -print -quit)
+          if [ -z "$SETTINGS" ]; then
+            SETTINGS=$(find extracted -type f -name settings.gradle.kts -print -quit)
+          fi
+          if [ -z "$SETTINGS" ]; then
+            echo "Android project settings file not found"
+            unzip -l "$ARCHIVE" | head -80
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$SETTINGS")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          test -d "$PROJECT_DIR/app"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$PROJECT_DIR"
+          if [ -f gradlew ]; then
+            chmod +x gradlew
+            ./gradlew --no-daemon assembleDebug
+          else
+            gradle --no-daemon assembleDebug
+          fi
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saloumi-Ransi-v34-APK
+          path: "**/build/outputs/apk/debug/*.apk"
+          if-no-files-found: error
+          retention-days: 30
+
